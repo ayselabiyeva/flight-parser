@@ -1,0 +1,3 @@
+flight_id,origin,destination,departure_datetime,arrival_datetime,price
+AB123,RIX,LHR,2024-12-01 08:00,2024-12-01 10:00,120
+CD456,RIX,AMS,2024-12-02 09:30,2024-12-02 11:00,90

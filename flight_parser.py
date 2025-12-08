@@ -4,7 +4,7 @@ Python Final Assignment: Flight Schedule Parser and Query Tool
 
 Usage examples:
     python flight_parser.py -i data/db.csv
-    python flight_parser.py -d data/flights/
+    python flight_parser.py -d data/flights/ (example)
     python flight_parser.py -j db.json
     python flight_parser.py -j db.json -q data/query.json
 """

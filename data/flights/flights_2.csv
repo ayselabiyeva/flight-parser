@@ -1,0 +1,3 @@
+flight_id,origin,destination,departure_datetime,arrival_datetime,price
+EF789,LHR,RIX,2024-12-03 14:00,2024-12-03 18:00,150
+XX,RIX,BC,wrong_date,2024-12-03 18:00,-10
