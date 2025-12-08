@@ -9,29 +9,23 @@ Usage examples:
     python flight_parser.py -j data/db.json -q data/query.json
 """
 
-import argparse
-import csv
-import json
-import os
+import argparse      #for reading command-line arguments
+import csv           #\
+import json           #for file handling (CSV files, JSON files, paths).
+import os            #/
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple
 
-# ==============================
-#  CONFIG – CHANGE TO YOUR DATA
-# ==============================
-STUDENT_ID = "231ADB279"      # <--- CHANGE if needed
-STUDENT_NAME = "Aysel"        # <--- CHANGE if needed
-STUDENT_LASTNAME = "Abiyeva"  # <--- CHANGE if needed
+STUDENT_ID = "231ADB279"      
+STUDENT_NAME = "Aysel"        
+STUDENT_LASTNAME = "Abiyeva"  
 
 DEFAULT_DB_JSON = "db.json"
 ERRORS_TXT = "errors.txt"
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M"
 
-
-# =========================
-#  HELPER VALIDATION FUNCS
-# =========================
+#Validation Functions
 
 def is_valid_flight_id(value: str) -> bool:
     return value.isalnum() and 2 <= len(value) <= 8
@@ -56,9 +50,9 @@ def parse_price(value: str) -> Optional[float]:
         return None
 
 
-# ============================
+
 #  CORE: CSV PARSING / VALIDATE
-# ============================
+
 
 def validate_row(fields: List[str], line_no: int, original_line: str) -> Tuple[bool, Optional[Dict[str, Any]], str]:
     """
@@ -136,11 +130,10 @@ def validate_row(fields: List[str], line_no: int, original_line: str) -> Tuple[b
     }
     return True, flight, ""
 
+#Parse a single CSV file, write errors to ERRORS_TXT, and return list of valid flights.
 
 def parse_csv_file(path: str) -> List[Dict[str, Any]]:
-    """
-    Parse a single CSV file, write errors to ERRORS_TXT, and return list of valid flights.
-    """
+
     valid_flights: List[Dict[str, Any]] = []
 
     with open(path, "r", encoding="utf-8") as f, open(ERRORS_TXT, "a", encoding="utf-8") as err_f:
@@ -177,11 +170,10 @@ def parse_csv_file(path: str) -> List[Dict[str, Any]]:
 
     return valid_flights
 
+#Parse all .csv files in a folder and combine results.
 
 def parse_csv_folder(folder_path: str) -> List[Dict[str, Any]]:
-    """
-    Parse all .csv files in a folder and combine results.
-    """
+    
     all_flights: List[Dict[str, Any]] = []
 
     # Clear/overwrite previous errors.txt
@@ -201,19 +193,15 @@ def parse_csv_folder(folder_path: str) -> List[Dict[str, Any]]:
 
     return all_flights
 
+#Parse a single CSV file (helper so we can clear errors.txt first).
 
 def parse_single_csv(path: str) -> List[Dict[str, Any]]:
-    """
-    Parse a single CSV file (helper so we can clear errors.txt first).
-    """
+
     if os.path.exists(ERRORS_TXT):
         os.remove(ERRORS_TXT)
     return parse_csv_file(path)
 
-
-# =======================
 #  JSON DB LOAD / SAVE
-# =======================
 
 def save_db_json(flights: List[Dict[str, Any]], output_path: str) -> None:
     with open(output_path, "w", encoding="utf-8") as f:
@@ -228,9 +216,7 @@ def load_db_json(path: str) -> List[Dict[str, Any]]:
     return data
 
 
-# ================
 #  QUERY HANDLING
-# ================
 
 def load_queries(path: str) -> List[Dict[str, Any]]:
     with open(path, "r", encoding="utf-8") as f:
@@ -241,15 +227,10 @@ def load_queries(path: str) -> List[Dict[str, Any]]:
         return data
     raise ValueError("Query JSON must be an object or an array of objects")
 
+#Apply filtering rules
 
 def flight_matches_query(flight: Dict[str, Any], query: Dict[str, Any]) -> bool:
-    """
-    Apply filtering rules:
-        flight_id, origin, destination → exact match
-        departure_datetime           → flight.departure >= query.departure
-        arrival_datetime             → flight.arrival <= query.arrival
-        price                        → flight.price <= query.price
-    """
+    
     # Exact matches
     for key in ("flight_id", "origin", "destination"):
         if key in query:
@@ -302,22 +283,17 @@ def run_queries_on_db(flights: List[Dict[str, Any]], queries: List[Dict[str, Any
         })
     return responses
 
+#Save responses to response_<studentid>_<name>_<lastname>_<YYYYMMDD_HHMM>.json. Returns the filename
 
 def save_query_response(responses: List[Dict[str, Any]]) -> str:
-    """
-    Save responses to response_<studentid>_<name>_<lastname>_<YYYYMMDD_HHMM>.json
-    Returns the filename.
-    """
+    
     now = datetime.now()
     filename = f"response_{STUDENT_ID}_{STUDENT_NAME}_{STUDENT_LASTNAME}_{now.strftime('%Y%m%d_%H%M')}.json"
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(responses, f, indent=2, ensure_ascii=False)
     return filename
 
-
-# ============
 #  CLI / MAIN
-# ============
 
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
